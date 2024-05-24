@@ -4,8 +4,8 @@
 新建 .env 文件，文件内容如下：
 
 ```
-export AccessKeyID=xxx
-export AccessKeySecret=xxx
+export AccessKeyID=
+export AccessKeySecret=
 export AccountID=xxx
 export aliasName=default    # 需要与 s.yml 中的 access 字段保持一致
 
