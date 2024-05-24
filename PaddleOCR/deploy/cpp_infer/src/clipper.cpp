@@ -1,42 +1,38 @@
 /*******************************************************************************
-*                                                                              *
-* Author    :  Angus Johnson                                                   *
-* Version   :  6.4.2                                                           *
-* Date      :  27 February 2017                                                *
-* Website   :  http://www.angusj.com                                           *
-* Copyright :  Angus Johnson 2010-2017                                         *
-*                                                                              *
-* License:                                                                     *
-* Use, modification & distribution is subject to Boost Software License Ver 1. *
-* http://www.boost.org/LICENSE_1_0.txt                                         *
-*                                                                              *
-* Attributions:                                                                *
-* The code in this library is an extension of Bala Vatti's clipping algorithm: *
-* "A generic solution to polygon clipping"                                     *
-* Communications of the ACM, Vol 35, Issue 7 (July 1992) pp 56-63.             *
-* http://portal.acm.org/citation.cfm?id=129906                                 *
-*                                                                              *
-* Computer graphics and geometric modeling: implementation and algorithms      *
-* By Max K. Agoston                                                            *
-* Springer; 1 edition (January 4, 2005)                                        *
-* http://books.google.com/books?q=vatti+clipping+agoston                       *
-*                                                                              *
-* See also:                                                                    *
-* "Polygon Offsetting by Computing Winding Numbers"                            *
-* Paper no. DETC2005-85513 pp. 565-575                                         *
-* ASME 2005 International Design Engineering Technical Conferences             *
-* and Computers and Information in Engineering Conference (IDETC/CIE2005)      *
-* September 24-28, 2005 , Long Beach, California, USA                          *
-* http://www.me.berkeley.edu/~mcmains/pubs/DAC05OffsetPolygon.pdf              *
-*                                                                              *
-*******************************************************************************/
+ *                                                                              *
+ * Author    :  Angus Johnson * Version   :  6.4.2 * Date      :  27 February
+ *2017                                                * Website   :
+ *http://www.angusj.com                                           * Copyright :
+ *Angus Johnson 2010-2017                                         *
+ *                                                                              *
+ * License: * Use, modification & distribution is subject to Boost Software
+ *License Ver 1. * http://www.boost.org/LICENSE_1_0.txt *
+ *                                                                              *
+ * Attributions: * The code in this library is an extension of Bala Vatti's
+ *clipping algorithm: * "A generic solution to polygon clipping" *
+ * Communications of the ACM, Vol 35, Issue 7 (July 1992) pp 56-63. *
+ * http://portal.acm.org/citation.cfm?id=129906 *
+ *                                                                              *
+ * Computer graphics and geometric modeling: implementation and algorithms * By
+ *Max K. Agoston                                                            *
+ * Springer; 1 edition (January 4, 2005) *
+ * http://books.google.com/books?q=vatti+clipping+agoston *
+ *                                                                              *
+ * See also: * "Polygon Offsetting by Computing Winding Numbers" * Paper no.
+ *DETC2005-85513 pp. 565-575                                         * ASME 2005
+ *International Design Engineering Technical Conferences             * and
+ *Computers and Information in Engineering Conference (IDETC/CIE2005)      *
+ * September 24-28, 2005 , Long Beach, California, USA *
+ * http://www.me.berkeley.edu/~mcmains/pubs/DAC05OffsetPolygon.pdf *
+ *                                                                              *
+ *******************************************************************************/
 
 /*******************************************************************************
-*                                                                              *
-* This is a translation of the Delphi Clipper library and the naming style     *
-* used has retained a Delphi flavour.                                          *
-*                                                                              *
-*******************************************************************************/
+ *                                                                              *
+ * This is a translation of the Delphi Clipper library and the naming style *
+ * used has retained a Delphi flavour. *
+ *                                                                              *
+ *******************************************************************************/
 #include <algorithm>
 #include <cmath>
 #include <cstdlib>
@@ -668,7 +664,7 @@ void DisposeOutPts(OutPt *&pp) {
 //------------------------------------------------------------------------------
 
 inline void InitEdge(TEdge *e, TEdge *eNext, TEdge *ePrev, const IntPoint &Pt) {
-  std::memset(e, 0, sizeof(TEdge));
+  std::memset(e, int(0), sizeof(TEdge));
   e->Next = eNext;
   e->Prev = ePrev;
   e->Curr = Pt;
@@ -1045,8 +1041,9 @@ bool ClipperBase::AddPath(const Path &pg, PolyType PolyTyp, bool Closed) {
     }
     if (E->Prev == E->Next)
       break; // only two vertices
-    else if (Closed && SlopesEqual(E->Prev->Curr, E->Curr, E->Next->Curr,
-                                   m_UseFullRange) &&
+    else if (Closed &&
+             SlopesEqual(E->Prev->Curr, E->Curr, E->Next->Curr,
+                         m_UseFullRange) &&
              (!m_PreserveCollinear ||
               !Pt2IsBetweenPt1AndPt3(E->Prev->Curr, E->Curr, E->Next->Curr))) {
       // Collinear edges are allowed for open paths but in closed paths
@@ -1895,17 +1892,17 @@ void Clipper::InsertLocalMinimaIntoAEL(const cInt botY) {
     TEdge *rb = lm->RightBound;
 
     OutPt *Op1 = 0;
-    if (!lb) {
+    if (!lb || !rb) {
       // nb: don't insert LB into either AEL or SEL
       InsertEdgeIntoAEL(rb, 0);
       SetWindingCount(*rb);
       if (IsContributing(*rb))
         Op1 = AddOutPt(rb, rb->Bot);
-    } else if (!rb) {
-      InsertEdgeIntoAEL(lb, 0);
-      SetWindingCount(*lb);
-      if (IsContributing(*lb))
-        Op1 = AddOutPt(lb, lb->Bot);
+      //} else if (!rb) {
+      //  InsertEdgeIntoAEL(lb, 0);
+      //  SetWindingCount(*lb);
+      //  if (IsContributing(*lb))
+      //    Op1 = AddOutPt(lb, lb->Bot);
       InsertScanbeam(lb->Top.Y);
     } else {
       InsertEdgeIntoAEL(lb, 0);
@@ -2518,14 +2515,14 @@ void GetHorzDirection(TEdge &HorzEdge, Direction &Dir, cInt &Left,
 //------------------------------------------------------------------------
 
 /*******************************************************************************
-* Notes: Horizontal edges (HEs) at scanline intersections (ie at the Top or    *
-* Bottom of a scanbeam) are processed as if layered. The order in which HEs    *
-* are processed doesn't matter. HEs intersect with other HE Bot.Xs only [#]    *
-* (or they could intersect with Top.Xs only, ie EITHER Bot.Xs OR Top.Xs),      *
-* and with other non-horizontal edges [*]. Once these intersections are        *
-* processed, intermediate HEs then 'promote' the Edge above (NextInLML) into   *
-* the AEL. These 'promoted' edges may in turn intersect [%] with other HEs.    *
-*******************************************************************************/
+ * Notes: Horizontal edges (HEs) at scanline intersections (ie at the Top or *
+ * Bottom of a scanbeam) are processed as if layered. The order in which HEs *
+ * are processed doesn't matter. HEs intersect with other HE Bot.Xs only [#] *
+ * (or they could intersect with Top.Xs only, ie EITHER Bot.Xs OR Top.Xs), * and
+ *with other non-horizontal edges [*]. Once these intersections are        *
+ * processed, intermediate HEs then 'promote' the Edge above (NextInLML) into *
+ * the AEL. These 'promoted' edges may in turn intersect [%] with other HEs. *
+ *******************************************************************************/
 
 void Clipper::ProcessHorizontal(TEdge *horzEdge) {
   Direction dir;
@@ -2547,13 +2544,13 @@ void Clipper::ProcessHorizontal(TEdge *horzEdge) {
     if (dir == dLeftToRight) {
       maxIt = m_Maxima.begin();
       while (maxIt != m_Maxima.end() && *maxIt <= horzEdge->Bot.X)
-        maxIt++;
+        ++maxIt;
       if (maxIt != m_Maxima.end() && *maxIt >= eLastHorz->Top.X)
         maxIt = m_Maxima.end();
     } else {
       maxRit = m_Maxima.rbegin();
       while (maxRit != m_Maxima.rend() && *maxRit > horzEdge->Bot.X)
-        maxRit++;
+        ++maxRit;
       if (maxRit != m_Maxima.rend() && *maxRit <= eLastHorz->Top.X)
         maxRit = m_Maxima.rend();
     }
@@ -2576,13 +2573,13 @@ void Clipper::ProcessHorizontal(TEdge *horzEdge) {
           while (maxIt != m_Maxima.end() && *maxIt < e->Curr.X) {
             if (horzEdge->OutIdx >= 0 && !IsOpen)
               AddOutPt(horzEdge, IntPoint(*maxIt, horzEdge->Bot.Y));
-            maxIt++;
+            ++maxIt;
           }
         } else {
           while (maxRit != m_Maxima.rend() && *maxRit > e->Curr.X) {
             if (horzEdge->OutIdx >= 0 && !IsOpen)
               AddOutPt(horzEdge, IntPoint(*maxRit, horzEdge->Bot.Y));
-            maxRit++;
+            ++maxRit;
           }
         }
       };
@@ -4377,4 +4374,4 @@ std::ostream &operator<<(std::ostream &s, const Paths &p) {
 }
 //------------------------------------------------------------------------------
 
-} // ClipperLib namespace
+} // namespace ClipperLib

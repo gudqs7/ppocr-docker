@@ -12,27 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "opencv2/core.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/imgproc.hpp"
+#pragma once
+
 #include "paddle_api.h"
 #include "paddle_inference_api.h"
-#include <chrono>
-#include <iomanip>
-#include <iostream>
-#include <ostream>
-#include <vector>
 
-#include <cstring>
-#include <fstream>
-#include <numeric>
-
-#include <include/ocr_cls.h>
-#include <include/postprocess_op.h>
 #include <include/preprocess_op.h>
 #include <include/utility.h>
-
-using namespace paddle_infer;
 
 namespace PaddleOCR {
 
@@ -41,15 +27,23 @@ public:
   explicit CRNNRecognizer(const std::string &model_dir, const bool &use_gpu,
                           const int &gpu_id, const int &gpu_mem,
                           const int &cpu_math_library_num_threads,
-                          const bool &use_mkldnn, const string &label_path,
-                          const bool &use_tensorrt, const bool &use_fp16) {
+                          const bool &use_mkldnn, const std::string &label_path,
+                          const bool &use_tensorrt,
+                          const std::string &precision,
+                          const int &rec_batch_num, const int &rec_img_h,
+                          const int &rec_img_w) {
     this->use_gpu_ = use_gpu;
     this->gpu_id_ = gpu_id;
     this->gpu_mem_ = gpu_mem;
     this->cpu_math_library_num_threads_ = cpu_math_library_num_threads;
     this->use_mkldnn_ = use_mkldnn;
     this->use_tensorrt_ = use_tensorrt;
-    this->use_fp16_ = use_fp16;
+    this->precision_ = precision;
+    this->rec_batch_num_ = rec_batch_num;
+    this->rec_img_h_ = rec_img_h;
+    this->rec_img_w_ = rec_img_w;
+    std::vector<int> rec_image_shape = {3, rec_img_h, rec_img_w};
+    this->rec_image_shape_ = rec_image_shape;
 
     this->label_list_ = Utility::ReadDict(label_path);
     this->label_list_.insert(this->label_list_.begin(),
@@ -62,11 +56,11 @@ public:
   // Load Paddle inference model
   void LoadModel(const std::string &model_dir);
 
-  void Run(std::vector<std::vector<std::vector<int>>> boxes, cv::Mat &img,
-           Classifier *cls);
+  void Run(std::vector<cv::Mat> img_list, std::vector<std::string> &rec_texts,
+           std::vector<float> &rec_text_scores, std::vector<double> &times);
 
 private:
-  std::shared_ptr<Predictor> predictor_;
+  std::shared_ptr<paddle_infer::Predictor> predictor_;
 
   bool use_gpu_ = false;
   int gpu_id_ = 0;
@@ -80,17 +74,15 @@ private:
   std::vector<float> scale_ = {1 / 0.5f, 1 / 0.5f, 1 / 0.5f};
   bool is_scale_ = true;
   bool use_tensorrt_ = false;
-  bool use_fp16_ = false;
+  std::string precision_ = "fp32";
+  int rec_batch_num_ = 6;
+  int rec_img_h_ = 32;
+  int rec_img_w_ = 320;
+  std::vector<int> rec_image_shape_ = {3, rec_img_h_, rec_img_w_};
   // pre-process
   CrnnResizeImg resize_op_;
   Normalize normalize_op_;
-  Permute permute_op_;
-
-  // post-process
-  PostProcessor post_processor_;
-
-  cv::Mat GetRotateCropImage(const cv::Mat &srcimage,
-                             std::vector<std::vector<int>> box);
+  PermuteBatch permute_op_;
 
 }; // class CrnnRecognizer
 

@@ -14,8 +14,9 @@
 
 
 class ClsMetric(object):
-    def __init__(self, main_indicator='acc', **kwargs):
+    def __init__(self, main_indicator="acc", **kwargs):
         self.main_indicator = main_indicator
+        self.eps = 1e-5
         self.reset()
 
     def __call__(self, pred_label, *args, **kwargs):
@@ -28,7 +29,9 @@ class ClsMetric(object):
             all_num += 1
         self.correct_num += correct_num
         self.all_num += all_num
-        return {'acc': correct_num / all_num, }
+        return {
+            "acc": correct_num / (all_num + self.eps),
+        }
 
     def get_metric(self):
         """
@@ -36,9 +39,9 @@ class ClsMetric(object):
                  'acc': 0
             }
         """
-        acc = self.correct_num / self.all_num
+        acc = self.correct_num / (self.all_num + self.eps)
         self.reset()
-        return {'acc': acc}
+        return {"acc": acc}
 
     def reset(self):
         self.correct_num = 0

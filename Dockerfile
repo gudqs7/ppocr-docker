@@ -7,14 +7,14 @@ WORKDIR /PaddleOCR
 ADD /PaddleOCR/html/app_compat.py /usr/local/lib/python3.7/site-packages/paddlehub/serving/app_compat.py
 
 RUN mkdir -p /PaddleOCR/inference/
-ADD https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_det_infer.tar /PaddleOCR/inference/
-RUN tar xf /PaddleOCR/inference/ch_ppocr_mobile_v2.0_det_infer.tar -C /PaddleOCR/inference/
+ADD https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_det_infer.tar /PaddleOCR/inference/
+RUN tar xf /PaddleOCR/inference/ch_PP-OCRv4_det_infer.tar -C /PaddleOCR/inference/
 
 ADD https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_cls_infer.tar /PaddleOCR/inference/
 RUN tar xf /PaddleOCR/inference/ch_ppocr_mobile_v2.0_cls_infer.tar -C /PaddleOCR/inference/
 
-ADD https://paddleocr.bj.bcebos.com/dygraph_v2.0/ch/ch_ppocr_mobile_v2.0_rec_infer.tar /PaddleOCR/inference/
-RUN tar xf /PaddleOCR/inference/ch_ppocr_mobile_v2.0_rec_infer.tar -C /PaddleOCR/inference/
+ADD https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_rec_infer.tar /PaddleOCR/inference/
+RUN tar xf /PaddleOCR/inference/ch_PP-OCRv4_rec_infer.tar -C /PaddleOCR/inference/
 
 RUN hub install deploy/hubserving/ocr_system/
 RUN hub install deploy/hubserving/ocr_cls/
