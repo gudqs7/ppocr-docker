@@ -4,7 +4,7 @@ COPY PaddleOCR /PaddleOCR
 
 WORKDIR /PaddleOCR
 
-ADD /PaddleOCR/html/app_compat.py /usr/local/lib/python3.7/site-packages/paddlehub/serving/app_compat.py
+#ADD /PaddleOCR/html/app_compat.py /usr/local/lib/python3.7/site-packages/paddlehub/serving/app_compat.py
 
 RUN mkdir -p /PaddleOCR/inference/
 ADD https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_det_infer.tar /PaddleOCR/inference/
